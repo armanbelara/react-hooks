@@ -9,7 +9,6 @@ export const useFetch = (url) => {
     return () => {
       // called when the component is going to unmount
       isCurrent.current = false;
-      console.log("unmount");
     };
   });
 

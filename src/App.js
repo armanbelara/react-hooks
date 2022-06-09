@@ -1,45 +1,39 @@
-import React, { useRef, useState } from "react";
-import { useForm } from "./useForm";
-import { Hello } from "./Hello";
+import React, { useCallback, useMemo, useState } from "react";
+import { useFetch } from "./useFetch";
 
 const App = () => {
-  const [values, handleChange] = useForm({
-    email: '',
-    password: '',
-    firstName: ''
-  });
-  const inputRef = useRef();
-  const [showHello, setShowHello] = useState(true);
+  const [count, setCount] = useState(0);
+  const {data} = useFetch(
+    'https://raw.githubusercontent.com/ajzbc/kanye.rest/master/quotes.json'
+  );
+
+  const computeLongestWord = useCallback(arr => {
+    if (!arr) {
+      return [];
+    }
+
+    console.log("compute longest word");
+
+    let longestWord = '';
+
+    JSON.parse(arr).forEach(sentence => 
+      sentence.split(' ').forEach(word => {
+        if (word.length > longestWord.length) {
+          longestWord = word;
+        }
+      })
+    );
+
+    return longestWord;
+  }, []);
+
+  const longestWord = useMemo(() => computeLongestWord(data), [data, computeLongestWord]);
 
   return (
     <div>
-      <>
-        <button onClick={() => setShowHello(!showHello)}>toggle</button>
-        {showHello && <Hello />}
-        <input
-          ref={inputRef}
-          name="email"
-          value={values.email}
-          onChange={handleChange}
-        />
-        <input
-          name="firstName"
-          placeholder="Firstname"
-          value={values.firstName}
-          onChange={handleChange}
-        />
-        <input
-          type="password"
-          name="password"
-          value={values.password}
-          onChange={handleChange}
-        />
-        <button onClick={() => {
-          inputRef.current.focus();
-        }}>
-          focus
-        </button>
-      </>
+      <div>count: {count}</div>
+      <button onClick={() => setCount(count + 1)}>increment</button>
+      <div>{longestWord}</div>
     </div>
   );
 }
